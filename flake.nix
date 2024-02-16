@@ -96,8 +96,8 @@
                   inherit optionsDoc pyEnv;
                 };
                 unpackPhase = ''
-                  mkdir -p ./docs
-                  cat "${optionsDoc.optionsCommonMark}" > ./docs/nixos-options.md
+                  mkdir -p ./md
+                  cat "${optionsDoc.optionsCommonMark}" > ./md/cuda-modules.md
                 '';
                 configurePhase = ''
                   ln -s ${./mkdocs.yml} mkdocs.yml
@@ -106,19 +106,20 @@
                   mkdocs build
                 '';
                 installPhase = ''
-                  mv ./site "$out"
+                  mv ./docs "$out"
                 '';
               };
 
               docs-serve = pkgs.writeShellApplication {
                 name = "docs-serve";
                 runtimeInputs = [ pyEnv ];
-                text = ''
-                  mkdir -p ./docs
-                  cat "${optionsDoc.optionsCommonMark}" > ./docs/nixos-options.md
-                  mkdocs build
-                  mkdocs serve --no-livereload
-                '';
+                text =
+                  config.packages.docs.unpackPhase
+                  # NOTE: No need for the configurePhase
+                  + config.packages.docs.buildPhase
+                  + ''
+                    mkdocs serve --no-livereload
+                  '';
               };
             };
 

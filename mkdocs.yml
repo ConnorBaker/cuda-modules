@@ -1,3 +1,5 @@
 site_name: CUDA Modules
+site_dir: docs
+docs_dir: md
 theme:
   name: material
