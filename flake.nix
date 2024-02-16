@@ -29,7 +29,10 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
       { moduleWithSystem, withSystem, ... }:
       {
-        systems = [ "x86_64-linux" ];
+        systems = [
+          "aarch64-darwin"
+          "x86_64-linux"
+        ];
 
         imports = [
           {
@@ -97,7 +100,7 @@
                 };
                 unpackPhase = ''
                   mkdir -p ./md
-                  cat "${optionsDoc.optionsCommonMark}" > ./md/cuda-modules.md
+                  cat "${optionsDoc.optionsCommonMark}" > ./md/README.md
                 '';
                 configurePhase = ''
                   ln -s ${./mkdocs.yml} mkdocs.yml

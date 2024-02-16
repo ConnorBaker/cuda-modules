@@ -1,4 +1,7 @@
 site_name: CUDA Modules
+site_url: https://connorbaker.github.io/cuda-modules/
+repo_url: https://github.com/connorbaker/cuda-modules/
+repo_name: connorbaker/cuda-modules
 site_dir: docs
 docs_dir: md
 theme:

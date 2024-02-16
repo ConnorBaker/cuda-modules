@@ -78,33 +78,33 @@ submodule
 
 ```
 {
-  generalFixupFn = /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/fixup.nix;
-  indexedFixupFn = /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/fixups.nix;
+  generalFixupFn = /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/fixup.nix;
+  indexedFixupFn = /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/fixups.nix;
   manifestPaths = [
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_11.4.4.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_11.5.2.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_11.6.2.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_11.7.1.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_11.8.0.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_12.0.1.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_12.1.1.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_12.2.2.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/feature_12.3.0.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_11.4.4.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_11.5.2.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_11.6.2.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_11.7.1.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_11.8.0.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_12.0.1.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_12.1.1.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_12.2.2.json
-    /nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda/manifests/redistrib_12.3.0.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_11.4.4.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_11.5.2.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_11.6.2.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_11.7.1.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_11.8.0.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_12.0.1.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_12.1.1.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_12.2.2.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/feature_12.3.0.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_11.4.4.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_11.5.2.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_11.6.2.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_11.7.1.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_11.8.0.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_12.0.1.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_12.1.1.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_12.2.2.json
+    /nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda/manifests/redistrib_12.3.0.json
   ];
 }
 ```
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/cuda)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/cuda)
 
 
 
@@ -129,7 +129,7 @@ path or function that evaluates to a(n) (attribute set)
 ` <function> `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -145,7 +145,7 @@ A set of types used in building cudaPackages\.
 attribute set of optionType
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/generic/types\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/generic/types.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/generic/types\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/generic/types.nix)
 
 
 
@@ -170,7 +170,7 @@ path or (attribute set)
 ` { } `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -191,7 +191,7 @@ list of (submodule)
 the value of the ` manifestPaths ` option under ` builtins.map mkManifestMeta `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -207,7 +207,7 @@ The kind of manifest file
 one of “feature”, “redistrib”
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -223,7 +223,7 @@ Path to the manifest file
 path
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -239,7 +239,7 @@ The manifest version (major\.minor)
 A version number with a major and minor component\.
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -255,7 +255,7 @@ List of paths to CUDA redistributable manifests
 list of path
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -276,7 +276,7 @@ attribute set of (submodule)
 the value of the ` manifestMetas ` option under ` mkVersionedManifests `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests)
 
 
 
@@ -292,7 +292,7 @@ A feature manifest is an attribute set which includes a mapping from package nam
 attribute set of attribute set of (submodule)
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -323,7 +323,7 @@ submodule
 ```
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -339,7 +339,7 @@ A ` bin ` output requires that we have a non-empty ` bin ` directory containing 
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -361,7 +361,7 @@ A ` dev ` output requires that we have at least one of the following non-empty d
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -383,7 +383,7 @@ A ` doc ` output requires that we have at least one of the following non-empty d
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -399,7 +399,7 @@ A ` lib ` output requires that we have a non-empty lib directory containing at l
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -415,7 +415,7 @@ A ` sample ` output requires that we have a non-empty ` samples ` directory\.
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -431,7 +431,7 @@ A ` static ` output requires that we have a non-empty lib directory containing a
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/feature.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/feature.nix)
 
 
 
@@ -447,7 +447,7 @@ A redistributable manifest is an attribute set which includes a mapping from pac
 attribute set of (attribute set of (submodule))
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib.nix)
 
 
 
@@ -622,7 +622,7 @@ null or string
 ` "2023-08-29" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib.nix)
 
 
 
@@ -648,7 +648,7 @@ null or string
 ` "12.2.2" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib.nix)
 
 
 
@@ -674,7 +674,7 @@ null or string
 ` "cuda" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/submodules/manifests/redistrib.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/submodules/manifests/redistrib.nix)
 
 
 
@@ -700,7 +700,7 @@ list of A CUDA capability version\.
 ```
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules)
 
 
 
@@ -721,7 +721,7 @@ boolean
 ` false `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules)
 
 
 
@@ -742,7 +742,7 @@ boolean
 ` true `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules)
 
 
 
@@ -783,7 +783,7 @@ list of A version number with a major and minor component\.
 ```
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules)
 
 
 
@@ -799,7 +799,7 @@ A set of types used in building cudaPackages\.
 attribute set of optionType
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/generic/types\.nix](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/generic/types.nix)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/generic/types\.nix](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/generic/types.nix)
 
 
 
@@ -976,7 +976,7 @@ list of (submodule)
 ```
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -997,7 +997,7 @@ non-empty string
 ` "Kepler" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -1018,7 +1018,7 @@ A CUDA capability version\.
 ` "3.0" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -1041,7 +1041,7 @@ null or A version number with a major and minor component\.
 ` "10.2" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -1063,7 +1063,7 @@ NOTE: These architectures are only built upon request\.
 boolean
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -1084,7 +1084,7 @@ null or A version number with a major and minor component\.
 ` "10.2" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -1105,7 +1105,7 @@ A version number with a major and minor component\.
 ` "10.0" `
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/gpus)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/gpus)
 
 
 
@@ -1238,7 +1238,7 @@ attribute set of (submodule)
 ```
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities)
 
 
 
@@ -1254,7 +1254,7 @@ Maximum Clang major version to support this CUDA version
 A version number with a major component\.
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities)
 
 
 
@@ -1270,7 +1270,7 @@ Minimum Clang major version to support this CUDA version
 A version number with a major component\.
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities)
 
 
 
@@ -1286,7 +1286,7 @@ Maximum GCC major version to support this CUDA version
 A version number with a major component\.
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities)
 
 
 
@@ -1302,6 +1302,6 @@ Minimum GCC major version to support this CUDA version
 A version number with a major component\.
 
 *Declared by:*
- - [/nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities](file:///nix/store/ha7q569pqqzpx482f08vzscy217pbp30-source/cuda-modules/nvcc-compatibilities)
+ - [/nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities](file:///nix/store/j7b3x0cgm2x9kdqmd1n04rv156dj7g32-source/cuda-modules/nvcc-compatibilities)
 
 
