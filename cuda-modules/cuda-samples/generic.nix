@@ -37,7 +37,7 @@ backendStdenv.mkDerivation (
       # CMake has to run as a native, build-time dependency for libNVVM samples.
       # However, it's not the primary build tool -- that's still make.
       # As such, we disable CMake's build system.
-      ++ lists.optionals (strings.versionAtLeast finalAttrs.version "12.2") [cmake];
+      ++ lists.optionals (strings.versionAtLeast finalAttrs.version "12.2") [ cmake ];
 
     dontUseCmakeConfigure = true;
 
@@ -73,7 +73,7 @@ backendStdenv.mkDerivation (
       description = "Samples for CUDA Developers which demonstrates features in CUDA Toolkit";
       # CUDA itself is proprietary, but these sample apps are not.
       license = lib.licenses.bsd3;
-      maintainers = with lib.maintainers; [obsidian-systems-maintenance] ++ lib.teams.cuda.members;
+      maintainers = with lib.maintainers; [ obsidian-systems-maintenance ] ++ lib.teams.cuda.members;
     };
   }
 )

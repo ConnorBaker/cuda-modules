@@ -47,11 +47,11 @@ backendStdenv.mkDerivation (
         autoAddOpenGLRunpathHook
         python3
       ]
-      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [cudatoolkit]
-      ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [cuda_nvcc];
+      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [ cudatoolkit ]
+      ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [ cuda_nvcc ];
 
     buildInputs =
-      lib.optionals (lib.versionOlder cudaVersion "11.4") [cudatoolkit]
+      lib.optionals (lib.versionOlder cudaVersion "11.4") [ cudatoolkit ]
       ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [
         cuda_nvcc.dev # crt/host_config.h
         cuda_cudart
@@ -60,9 +60,9 @@ backendStdenv.mkDerivation (
       # against other version, like below, it's important that we use the same format. Otherwise,
       # we'll get incorrect results.
       # For example, lib.versionAtLeast "12.0" "12.0.0" == false.
-      ++ lib.optionals (lib.versionAtLeast cudaVersion "12.0") [cuda_cccl];
+      ++ lib.optionals (lib.versionAtLeast cudaVersion "12.0") [ cuda_cccl ];
 
-    env.NIX_CFLAGS_COMPILE = toString ["-Wno-unused-function"];
+    env.NIX_CFLAGS_COMPILE = toString [ "-Wno-unused-function" ];
 
     preConfigure = ''
       patchShebangs ./src/device/generate.py
@@ -72,7 +72,7 @@ backendStdenv.mkDerivation (
     '';
 
     makeFlags =
-      ["PREFIX=$(out)"]
+      [ "PREFIX=$(out)" ]
       ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [
         "CUDA_HOME=${cudatoolkit}"
         "CUDA_LIB=${lib.getLib cudatoolkit}/lib"

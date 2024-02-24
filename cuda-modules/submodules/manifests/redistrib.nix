@@ -1,7 +1,7 @@
 { lib, ... }:
 let
   inherit (lib) options types;
-  
+
   # Foundational option for a package -- a release for a specific architecture
   package = options.mkOption {
     description = "A package in the manifest";
@@ -95,4 +95,3 @@ in
 {
   options.redistrib = manifest;
 }
-

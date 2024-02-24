@@ -38,13 +38,13 @@ backendStdenv.mkDerivation (
     strictDeps = true;
 
     nativeBuildInputs =
-      [which]
-      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [cudatoolkit]
-      ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [cuda_nvcc];
+      [ which ]
+      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [ cudatoolkit ]
+      ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [ cuda_nvcc ];
 
     buildInputs =
-      [nccl]
-      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [cudatoolkit]
+      [ nccl ]
+      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [ cudatoolkit ]
       ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [
         cuda_nvcc.dev # crt/host_config.h
         cuda_cudart
@@ -52,13 +52,13 @@ backendStdenv.mkDerivation (
       ++ lib.optionals (lib.versionAtLeast cudaVersion "12.0") [
         cuda_cccl.dev # <nv/target>
       ]
-      ++ lib.optionals mpiSupport [mpi];
+      ++ lib.optionals mpiSupport [ mpi ];
 
     makeFlags =
-      ["NCCL_HOME=${nccl}"]
-      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") ["CUDA_HOME=${cudatoolkit}"]
-      ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") ["CUDA_HOME=${cuda_nvcc}"]
-      ++ lib.optionals mpiSupport ["MPI=1"];
+      [ "NCCL_HOME=${nccl}" ]
+      ++ lib.optionals (lib.versionOlder cudaVersion "11.4") [ "CUDA_HOME=${cudatoolkit}" ]
+      ++ lib.optionals (lib.versionAtLeast cudaVersion "11.4") [ "CUDA_HOME=${cuda_nvcc}" ]
+      ++ lib.optionals mpiSupport [ "MPI=1" ];
 
     enableParallelBuilding = true;
 
@@ -78,7 +78,7 @@ backendStdenv.mkDerivation (
       platforms = platforms.linux;
       license = licenses.bsd3;
       broken = !config.cudaSupport || (mpiSupport && mpi == null);
-      maintainers = with maintainers; [jmillerpdt] ++ teams.cuda.members;
+      maintainers = with maintainers; [ jmillerpdt ] ++ teams.cuda.members;
     };
   }
 )

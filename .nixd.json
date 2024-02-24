@@ -1,0 +1,20 @@
+{
+    "eval": {
+        "depth": 10,
+        "target": {
+            "args": [],
+            "installable": ".#nixosConfigurations.cuda-modules.options"
+        },
+        "workers": 1
+    },
+    "formatting": {
+        "command": "nixfmt"
+    },
+    "options": {
+        "enable": true,
+        "target": {
+            "args": [],
+            "installable": ".#nixosConfigurations.cuda-modules.options"
+        }
+    }
+}

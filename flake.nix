@@ -27,7 +27,12 @@
   outputs =
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
-      { moduleWithSystem, withSystem, ... }:
+      {
+        moduleWithSystem,
+        withSystem,
+        self,
+        ...
+      }:
       {
         systems = [
           "aarch64-darwin"
@@ -172,7 +177,7 @@
                   inherit pkgs;
                 };
               }
-              config.nixosModules.cuda-modules
+              self.nixosModules.cuda-modules
             ];
           }
         );

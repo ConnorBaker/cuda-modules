@@ -41,7 +41,7 @@ in
     extraPackageFields = options.mkOption {
       description = "Extra fields present in each `package`";
       type = types.attrsOf types.raw;
-      default = {};
+      default = { };
     };
     releases = options.mkOption {
       description = "A mapping from platform to packages";

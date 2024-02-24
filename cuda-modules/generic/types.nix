@@ -1,50 +1,69 @@
 { lib, ... }:
 let
-  inherit (lib) options types;
+  inherit (lib) attrsets options types;
+
+  # Override the base type of an option with a more specific type.
+  mkOptionForTypeOverride =
+    name:
+    { description, baseType }:
+    options.mkOption {
+      inherit description;
+      type = types.optionType;
+      default = baseType // {
+        inherit description name;
+      };
+    };
+
+  # Create an option with a base type of `strMatching`.
+  mkOptionForStrMatching =
+    name:
+    { description, pattern }:
+    mkOptionForTypeOverride name {
+      inherit description;
+      baseType = types.strMatching pattern;
+    };
 in
 {
-  options.generic.types = options.mkOption {
-    description = "A set of types used in building cudaPackages.";
-    type = types.attrsOf types.optionType;
-  };
-  # Define inside config to forbid overriding.
-  config.generic.types = {
-    cudaArch = types.strMatching "^sm_[[:digit:]]+[a-z]?$" // {
-      name = "cudaArch";
-      description = "A CUDA architecture name.";
-    };
-
-    cudaCapability = types.strMatching "^[[:digit:]]+\\.[[:digit:]]+[a-z]?$" // {
-      name = "cudaCapability";
-      description = "A CUDA capability version.";
-    };
-
-    # https://github.com/ConnorBaker/cuda-redist-find-features/blob/c841980e146f8664bbcd0ba1399e486b7910617b/cuda_redist_find_features/types/_lib_so_name.py
-    libSoName = types.strMatching ".*\\.so(\\.[[:digit:]]+)*$" // {
-      name = "libSoName";
-      description = "The name of a shared object file.";
-    };
-
-    majorVersion = types.strMatching "^([[:digit:]]+)$" // {
-      name = "majorVersion";
-      description = "A version number with a major component.";
-    };
-
-    majorMinorVersion = types.strMatching "^([[:digit:]]+)\\.([[:digit:]]+)$" // {
-      name = "majorMinorVersion";
-      description = "A version number with a major and minor component.";
-    };
-
-    majorMinorPatchVersion = types.strMatching "^([[:digit:]]+)\\.([[:digit:]]+)\\.([[:digit:]]+)$" // {
-      name = "majorMinorPatchVersion";
-      description = "A version number with a major, minor, and patch component.";
-    };
-
-    majorMinorPatchBuildVersion =
-      types.strMatching "^([[:digit:]]+)\\.([[:digit:]]+)\\.([[:digit:]]+)\\.([[:digit:]]+)$"
-      // {
-        name = "majorMinorPatchBuildVersion";
-        description = "A version number with a major, minor, patch, and build component.";
+  # As this module is meant to be consumed as a submodule, allow the user to add additional options to the module (so
+  # long as they are also option types -- otherwise they would not belong in this module.
+  freeformType = types.attrsOf types.optionType;
+  options =
+    # Types which are based on the `strMatching` type.
+    attrsets.mapAttrs mkOptionForStrMatching {
+      cudaArch = {
+        description = "A CUDA architecture name.";
+        pattern = "^sm_[[:digit:]]+[a-z]?$";
       };
-  };
+
+      cudaCapability = {
+        description = "A CUDA capability version.";
+        pattern = "^[[:digit:]]+\\.[[:digit:]]+[a-z]?$";
+      };
+
+      # https://github.com/ConnorBaker/cuda-redist-find-features/blob/c841980e146f8664bbcd0ba1399e486b7910617b/cuda_redist_find_features/types/_lib_so_name.py
+      libSoName = {
+        description = "The name of a shared object file.";
+        pattern = ".*\\.so(\\.[[:digit:]]+)*$";
+      };
+
+      majorVersion = {
+        description = "A version number with a major component.";
+        pattern = "^([[:digit:]]+)$";
+      };
+
+      majorMinorVersion = {
+        description = "A version number with a major and minor component.";
+        pattern = "^([[:digit:]]+)\\.([[:digit:]]+)$";
+      };
+
+      majorMinorPatchVersion = {
+        description = "A version number with a major, minor, and patch component.";
+        pattern = "^([[:digit:]]+)\\.([[:digit:]]+)\\.([[:digit:]]+)$";
+      };
+
+      majorMinorPatchBuildVersion = {
+        description = "A version number with a major, minor, patch, and build component.";
+        pattern = "^([[:digit:]]+)\\.([[:digit:]]+)\\.([[:digit:]]+)\\.([[:digit:]]+)$";
+      };
+    };
 }

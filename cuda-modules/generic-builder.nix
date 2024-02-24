@@ -104,9 +104,7 @@ backendStdenv.mkDerivation (
         # recall that OfBorg will evaluate packages marked as broken and that `cudaPackages` will be evaluated with
         # `cudaSupport = false`!
         additionalOutputs =
-          if redistArch == "unsupported"
-          then possibleOutputs
-          else builtins.filter hasOutput possibleOutputs;
+          if redistArch == "unsupported" then possibleOutputs else builtins.filter hasOutput possibleOutputs;
         # The out output is special -- it's the default output and we always include it.
         outputs = [ "out" ] ++ additionalOutputs;
       in
@@ -125,9 +123,9 @@ backendStdenv.mkDerivation (
         "lib"
         "lib64"
       ];
-      static = ["**/*.a"];
-      sample = ["samples"];
-      python = ["**/*.whl"];
+      static = [ "**/*.a" ];
+      sample = [ "samples" ];
+      python = [ "**/*.whl" ];
     };
 
     # Useful for introspecting why something went wrong. Maps descriptions of why the derivation would be marked as
@@ -190,36 +188,36 @@ backendStdenv.mkDerivation (
     # We do need some other phases, like configurePhase, so the multiple-output setup hook works.
     dontBuild = true;
 
-    nativeBuildInputs = [
-      autoPatchelfHook
-      # This hook will make sure libcuda can be found
-      # in typically /lib/opengl-driver by adding that
-      # directory to the rpath of all ELF binaries.
-      # Check e.g. with `patchelf --print-rpath path/to/my/binary
-      autoAddOpenGLRunpathHook
-      markForCudatoolkitRootHook
-    ]
-    # autoAddCudaCompatRunpathHook depends on cuda_compat and would cause
-    # infinite recursion if applied to `cuda_compat` itself (beside the fact
-    # that it doesn't make sense in the first place)
-    ++ lib.optionals (pname != "cuda_compat" && flags.isJetsonBuild) [
-      # autoAddCudaCompatRunpathHook must appear AFTER autoAddOpenGLRunpathHook.
-      # See its documentation in ./setup-hooks/extension.nix.
-      autoAddCudaCompatRunpathHook
-    ];
-
-    buildInputs =
+    nativeBuildInputs =
       [
-        # autoPatchelfHook will search for a libstdc++ and we're giving it
-        # one that is compatible with the rest of nixpkgs, even when
-        # nvcc forces us to use an older gcc
-        # NB: We don't actually know if this is the right thing to do
-        stdenv.cc.cc.lib
+        autoPatchelfHook
+        # This hook will make sure libcuda can be found
+        # in typically /lib/opengl-driver by adding that
+        # directory to the rpath of all ELF binaries.
+        # Check e.g. with `patchelf --print-rpath path/to/my/binary
+        autoAddOpenGLRunpathHook
+        markForCudatoolkitRootHook
+      ]
+      # autoAddCudaCompatRunpathHook depends on cuda_compat and would cause
+      # infinite recursion if applied to `cuda_compat` itself (beside the fact
+      # that it doesn't make sense in the first place)
+      ++ lib.optionals (pname != "cuda_compat" && flags.isJetsonBuild) [
+        # autoAddCudaCompatRunpathHook must appear AFTER autoAddOpenGLRunpathHook.
+        # See its documentation in ./setup-hooks/extension.nix.
+        autoAddCudaCompatRunpathHook
       ];
+
+    buildInputs = [
+      # autoPatchelfHook will search for a libstdc++ and we're giving it
+      # one that is compatible with the rest of nixpkgs, even when
+      # nvcc forces us to use an older gcc
+      # NB: We don't actually know if this is the right thing to do
+      stdenv.cc.cc.lib
+    ];
 
     # Picked up by autoPatchelf
     # Needed e.g. for libnvrtc to locate (dlopen) libnvrtc-builtins
-    appendRunpaths = ["$ORIGIN"];
+    appendRunpaths = [ "$ORIGIN" ];
 
     # NOTE: We don't need to check for dev or doc, because those outputs are handled by
     # the multiple-outputs setup hook.
@@ -231,7 +229,7 @@ backendStdenv.mkDerivation (
           output:
           let
             template = pattern: ''moveToOutput "${pattern}" "${"$" + output}"'';
-            patterns = finalAttrs.outputToPatterns.${output} or [];
+            patterns = finalAttrs.outputToPatterns.${output} or [ ];
           in
           strings.concatMapStringsSep "\n" template patterns;
       in
@@ -295,7 +293,7 @@ backendStdenv.mkDerivation (
     # That should allow us to emulate "fat" default outputs without having to actually create them.
     #
     # It is important that this run after the autoPatchelfHook, otherwise the symlinks in out will reference libraries in lib, creating a circular dependency.
-    postPhases = ["postPatchelf"];
+    postPhases = [ "postPatchelf" ];
 
     # For each output, create a symlink to it in the out output.
     # NOTE: We must recreate the out output here, because the setup hook will have deleted it if it was empty.
@@ -326,7 +324,7 @@ backendStdenv.mkDerivation (
 
     meta = {
       description = "${redistribRelease.name}. By downloading and using the packages you accept the terms and conditions of the ${finalAttrs.meta.license.shortName}";
-      sourceProvenance = [sourceTypes.binaryNativeCode];
+      sourceProvenance = [ sourceTypes.binaryNativeCode ];
       broken = lists.any trivial.id (attrsets.attrValues finalAttrs.brokenConditions);
       platforms = trivial.pipe supportedRedistArchs [
         # Map each redist arch to the equivalent nix system or null if there is no equivalent.
@@ -343,7 +341,7 @@ backendStdenv.mkDerivation (
       maintainers = teams.cuda.members;
       # Force the use of the default, fat output by default (even though `dev` exists, which
       # causes Nix to prefer that output over the others if outputSpecified isn't set).
-      outputsToInstall = ["out"];
+      outputsToInstall = [ "out" ];
     };
   }
 )

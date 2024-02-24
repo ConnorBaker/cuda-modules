@@ -5,16 +5,58 @@
   ...
 }:
 let
-  inherit (lib) options types;
+  inherit (lib)
+    attrsets
+    lists
+    options
+    strings
+    trivial
+    types
+    versions
+    ;
+
+  cudaPackagesSet = options.mkOption {
+    description = "A CUDA package set for a particular version of CUDA";
+    type = types.submoduleWith {
+      # Generic is propagated manually to avoid exposing it in the package sets.
+      specialArgs = {
+        inherit (config) generic;
+      };
+      modules = [ ./cudaPackagesSet.nix ];
+    };
+    default = { };
+  };
+
+  cudaPackagesSets =
+    let
+      # Creates a package set for each CUDA version, using the provided builder
+      # function applied to the CUDA version to create the package set.
+      mkCudaPackageSet =
+        builder:
+        attrsets.listToAttrs (
+          lists.map
+            (cudaVersion: {
+              name = config.generic.utils.mkVersionedPackageName "cudaPackages" cudaVersion;
+              value = builder cudaVersion;
+            })
+            config.cudaVersions
+        );
+    in
+    options.mkOption {
+      description = "CUDA Package Sets";
+      type = types.submoduleWith {
+        # Map each CUDA version to an option type for the package set.
+        modules = [ { options = mkCudaPackageSet (trivial.const cudaPackagesSet); } ];
+      };
+      default = mkCudaPackageSet (cudaVersion: { inherit cudaVersion; });
+    };
 in
 {
   imports = [
     ./generic
-    ./gpus
-    ./nvcc-compatibilities
     # ./utils.nix
     # # Always after generic
-    ./cuda
+    # ./cuda
     # ./cudnn
     # ./tensorrt
     # ./cutensor
@@ -66,6 +108,8 @@ in
         "12.3"
       ];
     };
+
+    inherit cudaPackagesSets;
 
     # packages = options.mkOption {
     #   description = "Nixpkgs";
