@@ -9,53 +9,13 @@ let
     attrsets
     lists
     options
-    strings
-    trivial
     types
-    versions
     ;
-
-  cudaPackagesSet = options.mkOption {
-    description = "A CUDA package set for a particular version of CUDA";
-    type = types.submoduleWith {
-      # Generic is propagated manually to avoid exposing it in the package sets.
-      specialArgs = {
-        inherit (config) generic;
-      };
-      modules = [ ./cudaPackagesSet.nix ];
-    };
-    default = { };
-  };
-
-  cudaPackagesSets =
-    let
-      # Creates a package set for each CUDA version, using the provided builder
-      # function applied to the CUDA version to create the package set.
-      mkCudaPackageSet =
-        builder:
-        attrsets.listToAttrs (
-          lists.map
-            (cudaVersion: {
-              name = config.generic.utils.mkVersionedPackageName "cudaPackages" cudaVersion;
-              value = builder cudaVersion;
-            })
-            config.cudaVersions
-        );
-    in
-    options.mkOption {
-      description = "CUDA Package Sets";
-      type = types.submoduleWith {
-        # Map each CUDA version to an option type for the package set.
-        modules = [ { options = mkCudaPackageSet (trivial.const cudaPackagesSet); } ];
-      };
-      default = mkCudaPackageSet (cudaVersion: { inherit cudaVersion; });
-    };
 in
 {
   imports = [
     ./generic
-    # ./utils.nix
-    # # Always after generic
+    # Always after generic
     # ./cuda
     # ./cudnn
     # ./tensorrt
@@ -68,21 +28,6 @@ in
   # Please see the accompanying documentation or https://github.com/NixOS/nixpkgs/pull/205351
 
   options = {
-    cudaSupport = options.mkOption {
-      description = "Build packages with CUDA support";
-      type = types.bool;
-      default = pkgs.config.cudaSupport;
-    };
-    cudaCapabilities = options.mkOption {
-      description = "CUDA capabilities (hardware generations) to build for";
-      type = types.listOf config.generic.types.cudaCapability;
-      default = pkgs.config.cudaCapabilities or [ ];
-    };
-    cudaForwardCompat = options.mkOption {
-      description = "Build with forward compatibility gencode (+PTX) to support future GPU generations";
-      type = types.bool;
-      default = pkgs.config.cudaForwardCompat or false;
-    };
     cudaVersions = options.mkOption {
       description = "A list of CUDA versions to create package sets for";
       type = types.listOf config.generic.types.majorMinorVersion;
@@ -109,12 +54,46 @@ in
       ];
     };
 
-    inherit cudaPackagesSets;
-
-    # packages = options.mkOption {
-    #   description = "Nixpkgs";
-    #   type = types.lazyAttrsOf types.raw;
-    #   default = pkgs;
-    # };
+    cudaPackagesPackageSets =
+      let
+        # An option type for a CUDA package set.
+        cudaPackagesPackageSet =
+          cudaVersion:
+          options.mkOption {
+            description = "A CUDA package set for a particular version of CUDA";
+            type = types.submoduleWith {
+              modules = [
+                {
+                  inherit cudaVersion;
+                  _module.args = {
+                    inherit pkgs;
+                    inherit (config) generic;
+                  };
+                }
+                ./cuda-packages-package-set.nix
+              ];
+            };
+          };
+        # Creates a package set for each CUDA version, using the provided builder
+        # function applied to the CUDA version to create the package set.
+        mkCudaPackagesPackageSet =
+          builder:
+          attrsets.listToAttrs (
+            lists.map
+              (cudaVersion: {
+                name = config.generic.utils.mkVersionedPackageName "cudaPackages" cudaVersion;
+                value = builder cudaVersion;
+              })
+              config.cudaVersions
+          );
+      in
+      options.mkOption {
+        description = "CUDA Package Sets";
+        type = types.submoduleWith {
+          # Map each CUDA version to an option type for the package set.
+          modules = [ { options = mkCudaPackagesPackageSet cudaPackagesPackageSet; } ];
+        };
+        default = mkCudaPackagesPackageSet (cudaVersion: { inherit cudaVersion; });
+      };
   };
 }

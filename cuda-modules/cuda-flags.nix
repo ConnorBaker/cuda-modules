@@ -9,7 +9,6 @@ let
   inherit (pkgs) stdenv;
 
   inherit (lib)
-    asserts
     attrsets
     lists
     strings
@@ -18,13 +17,7 @@ let
     types
     ;
 
-  inherit (config)
-    cudaVersion
-    cudaAtLeast
-    cudaAtMost
-    cudaOlder
-    cudaNewer
-    ;
+  inherit (config) cudaAtLeast cudaAtMost;
 in
 {
   # Flags are determined based on your CUDA toolkit by default.  You may benefit
@@ -44,410 +37,291 @@ in
   #
   # Please see the accompanying documentation or https://github.com/NixOS/nixpkgs/pull/205351
   options.cudaFlags = {
-    isSupported = options.mkOption {
-      description = "Whether a CUDA version supports a given GPU";
-      type = types.functionTo types.bool;
-      default =
-        { minCudaVersion, maxCudaVersion, ... }:
-        cudaAtLeast minCudaVersion && (maxCudaVersion == null || cudaAtMost maxCudaVersion);
-    };
-    supportedGpus = options.mkOption {
-      description = "The GPUs supported by a given CUDA version";
-      type = types.listOf generic.types.gpu;
-      default = lists.filter config.cudaFlags.isSupported generic.gpus;
-    };
-    supportedCapabilities = options.mkOption {
-      description = "The compute capabilities supported by a given CUDA version";
-      type = types.listOf generic.types.cudaCapability;
-      default = lists.map (gpu: gpu.computeCapability) config.cudaFlags.supportedGpus;
+    utils = {
+      isSupported = options.mkOption {
+        description = "Whether a CUDA version supports a given GPU";
+        type = types.functionTo types.bool;
+        default =
+          { minCudaVersion, maxCudaVersion, ... }:
+          cudaAtLeast minCudaVersion && (maxCudaVersion == null || cudaAtMost maxCudaVersion);
+      };
+
+      isDefault = options.mkOption {
+        description = "Whether a GPU is included in the default capabilities";
+        type = types.functionTo types.bool;
+        default =
+          { dontDefaultAfter, isJetson, ... }:
+          let
+            newGpu = dontDefaultAfter == null;
+            recentGpu = newGpu || cudaAtMost dontDefaultAfter;
+          in
+          recentGpu && !isJetson;
+      };
+
+      dropDot = options.mkOption {
+        description = "Drops dots from a string.";
+        type = types.functionTo types.str;
+        default = strings.replaceStrings [ "." ] [ "" ];
+      };
+
+      archMapper = options.mkOption {
+        description = ''
+          Maps a feature across a list of compute capabilities to produce a list of architectures.
+
+          For example, "sm" and [ "8.0" "8.6" "8.7" ] yield [ "sm_80" "sm_86" "sm_87" ].
+        '';
+        type = types.functionTo (types.functionTo (types.listOf types.str));
+        default =
+          feat: lists.map (computeCapability: "${feat}_${config.cudaFlags.utils.dropDot computeCapability}");
+      };
+
+      gencodeMapper = options.mkOption {
+        description = ''
+          Maps a feature across a list of compute capabilities to produce a list of gencode arguments.
+
+          For example, "sm" and [ "8.0" "8.6" "8.7" ] yield [ "-gencode=arch=compute_80,code=sm_80"
+          "-gencode=arch=compute_86,code=sm_86" "-gencode=arch=compute_87,code=sm_87" ].
+        '';
+        type = types.functionTo (types.functionTo (types.listOf types.str));
+        default =
+          feat:
+          lists.map (
+            computeCapability:
+            let
+              dottedComputeCapability = config.cudaFlags.utils.dropDot computeCapability;
+            in
+            "-gencode=arch=compute_${dottedComputeCapability},code=${feat}_${dottedComputeCapability}"
+          );
+      };
+
+      getRedistArch = options.mkOption {
+        description = ''
+          Maps Nix system to NVIDIA redist arch.
+
+          NOTE: We swap out the default `linux-sbsa` redist (for server-grade ARM chips) with the
+          `linux-aarch64` redist (which is for Jetson devices) if we're building any Jetson devices.
+          Since both are based on aarch64, we can only have one or the other, otherwise there's an
+          ambiguity as to which should be used.
+
+          NOTE: This function *will* be called by unsupported systems because `cudaPackages` is part of
+          `all-packages.nix`, which is evaluated on all systems. As such, we need to handle unsupported
+          systems gracefully.
+        '';
+        type = types.functionTo (
+          types.enum [
+            "unsupported"
+            "linux-aarch64"
+            "linux-sbsa"
+            "linux-x86_64"
+            "linux-ppc64le"
+            "windows-x86_64"
+          ]
+        );
+        default =
+          nixSystem:
+          attrsets.attrByPath [ nixSystem ] "unsupported" {
+            aarch64-linux =
+              if config.cudaFlags.data.cudaJetsonGpus != [ ] then "linux-aarch64" else "linux-sbsa";
+            x86_64-linux = "linux-x86_64";
+            ppc64le-linux = "linux-ppc64le";
+            x86_64-windows = "windows-x86_64";
+          };
+      };
+
+      getNixSystem = options.mkOption {
+        description = ''
+          Maps NVIDIA redist arch to Nix system.
+
+          NOTE: This function *will* be called by unsupported systems because `cudaPackages` is part of
+          `all-packages.nix`, which is evaluated on all systems. As such, we need to handle unsupported
+          systems gracefully.
+        '';
+        type = types.functionTo (
+          types.enum [
+            "unsupported"
+            "aaarch64-linux"
+            "x86_64-linux"
+            "ppc64le-linux"
+            "x86_64-windows"
+          ]
+        );
+        default =
+          redistArch:
+          attrsets.attrByPath [ redistArch ] "unsupported" {
+            linux-sbsa = "aarch64-linux";
+            linux-aarch64 = "aarch64-linux";
+            linux-x86_64 = "x86_64-linux";
+            linux-ppc64le = "ppc64le-linux";
+            windows-x86_64 = "x86_64-windows";
+          };
+      };
     };
 
-    isDefault = options.mkOption {
-      description = "Whether a GPU is included in the default capabilities";
-      type = types.functionTo types.bool;
-      default =
-        { dontDefaultAfter, isJetson, ... }:
-        let
-          newGpu = dontDefaultAfter == null;
-          recentGpu = newGpu || cudaAtMost dontDefaultAfter;
-        in
-        recentGpu && !isJetson;
-    };
-    defaultGpus = options.mkOption {
-      description = "The default GPUs for a given CUDA version";
-      type = types.listOf generic.types.gpu;
-      default = lists.filter config.cudaFlags.isDefault config.cudaFlags.supportedGpus;
-    };
-    defaultCapabilities = options.mkOption {
-      description = "The default compute capabilities for a given CUDA version";
-      type = types.listOf generic.types.cudaCapability;
-      default = lists.map (gpu: gpu.computeCapability) config.cudaFlags.defaultGpus;
-    };
+    data = {
+      cudaSupport = options.mkOption {
+        description = "Build packages with CUDA support";
+        type = types.bool;
+        default = pkgs.config.cudaSupport;
+      };
+      cudaGpus = options.mkOption {
+        description = "CUDA GPUs to build for";
+        type = types.listOf generic.types.gpu;
+        default =
+          let
+            inherit (config.cudaFlags.data) cudaCapabilities supportedGpus;
+          in
+          lists.filter (gpu: lists.elem gpu.computeCapability cudaCapabilities) supportedGpus;
+      };
+      cudaNonJetsonGpus = options.mkOption {
+        description = "CUDA GPUs to build for, excluding Jetson devices";
+        type = types.listOf generic.types.gpu;
+        default = lists.intersectLists generic.data.gpus.nonJetsons config.cudaFlags.data.cudaGpus;
+      };
+      cudaJetsonGpus = options.mkOption {
+        description = "CUDA GPUs to build for, including only Jetson devices";
+        type = types.listOf generic.types.gpu;
+        default = lists.intersectLists generic.data.gpus.jetsons config.cudaFlags.data.cudaGpus;
+      };
+      cudaCapabilities = options.mkOption {
+        description = "CUDA capabilities (hardware generations) to build for";
+        type = types.listOf generic.types.cudaCapability;
+        default = pkgs.config.cudaCapabilities or config.cudaFlags.data.defaultCapabilities;
+      };
+      cudaForwardCompat = options.mkOption {
+        description = "Build with forward compatibility gencode (+PTX) to support future GPU generations";
+        type = types.bool;
+        default = pkgs.config.cudaForwardCompat or false;
+      };
 
-    cudaArchNameToVersions = options.mkOption {
-      description = "Maps the name of a GPU architecture to different versions of that architecture.";
-      type = types.attrsOf (types.listOf generic.types.cudaCapability);
-      example = {
-        Ampere = [
-          "8.0"
-          "8.6"
-          "8.7"
+      supportedGpus = options.mkOption {
+        description = "The GPUs supported by a given CUDA version";
+        type = types.listOf generic.types.gpu;
+        default = lists.filter config.cudaFlags.utils.isSupported generic.data.gpus.all;
+      };
+      supportedCapabilities = options.mkOption {
+        description = "The compute capabilities supported by a given CUDA version";
+        type = types.listOf generic.types.cudaCapability;
+        default = lists.map (gpu: gpu.computeCapability) config.cudaFlags.data.supportedGpus;
+      };
+
+      defaultGpus = options.mkOption {
+        description = "The default GPUs for a given CUDA version";
+        type = types.listOf generic.types.gpu;
+        default = lists.filter config.cudaFlags.utils.isDefault config.cudaFlags.data.supportedGpus;
+      };
+      defaultCapabilities = options.mkOption {
+        description = "The default compute capabilities for a given CUDA version";
+        type = types.listOf generic.types.cudaCapability;
+        default = lists.map (gpu: gpu.computeCapability) config.cudaFlags.data.defaultGpus;
+      };
+
+      archNames = options.mkOption {
+        description = "The names of the architectures to build for";
+        example = [
+          "Turing"
+          "Ampere"
+        ];
+        type = types.listOf types.str;
+        default = trivial.pipe config.cudaFlags.data.cudaGpus [
+          (lists.map (gpu: gpu.archName))
+          lists.unique
         ];
       };
-      default =
-        lists.groupBy' (versions: gpu: versions ++ [ gpu.computeCapability ]) [ ] (gpu: gpu.archName)
-          config.cudaFlags.supportedGpus;
-    };
-
-    cudaComputeCapabilityToName = options.mkOption {
-      description = "Maps the version of a GPU architecture to the name of that architecture.";
-      type = types.attrsOf types.nonEmptyStr;
-      example = {
-        "8.0" = "Ampere";
-        "8.6" = "Ampere";
-        "8.7" = "Ampere";
+      realArches = options.mkOption {
+        description = "The physical architectures to build for";
+        example = [
+          "sm_75"
+          "sm_86"
+        ];
+        type = types.listOf generic.types.cudaArch;
+        default = config.cudaFlags.utils.archMapper "sm" config.cudaFlags.data.cudaCapabilities;
       };
-      default = trivial.pipe config.cudaFlags.supportedGpus [
-        (lists.map (gpu: attrsets.nameValuePair gpu.computeCapability gpu.archName))
-        attrsets.listToAttrs
-      ];
-    };
-
-    cudaComputeCapabilityToIsJetson = options.mkOption {
-      description = "Maps the version of a GPU architecture to whether it is a Jetson device.";
-      type = types.attrsOf types.bool;
-      example = {
-        "8.0" = false;
-        "8.6" = false;
-        "8.7" = true;
+      virtualArches = options.mkOption {
+        description = ''
+          The virtual architectures to build for. These are typically used for forward compatibility,
+          when trying to support an architecture newer than the CUDA version allows.
+        '';
+        example = [
+          "compute_75"
+          "compute_86"
+        ];
+        type = types.listOf generic.types.virtualCudaArch;
+        default = config.cudaFlags.utils.archMapper "compute" config.cudaFlags.data.cudaCapabilities;
       };
-      default = trivial.pipe config.cudaFlags.supportedGpus [
-        (lists.map (gpu: attrsets.nameValuePair gpu.computeCapability gpu.isJetson))
-        attrsets.listToAttrs
-      ];
-    };
+      arches = options.mkOption {
+        description = ''
+          The architectures to build for. Includes a virtual architecture if forward compatibility is enabled.
+        '';
+        example = [
+          "sm_75"
+          "sm_86"
+          "compute_86"
+        ];
+        type = types.listOf (
+          types.oneOf [
+            generic.types.cudaArch
+            generic.types.virtualCudaArch
+          ]
+        );
+        default =
+          config.cudaFlags.data.realArches
+          ++ lists.optional config.cudaFlags.data.cudaForwardCompat (
+            lists.last config.cudaFlags.data.virtualArches
+          );
+      };
+      gencodeArgs = options.mkOption {
+        description = "The gencode arguments to pass to NVCC";
+        example = [
+          "-gencode=arch=compute_75,code=sm_75"
+          "-gencode=arch=compute_86,code=sm_86"
+          "-gencode=arch=compute_86,code=compute_86"
+        ];
+        type = types.listOf generic.types.gencodeArg;
+        default =
+          config.cudaFlags.utils.gencodeMapper "sm" config.cudaFlags.data.cudaCapabilities
+          ++ lists.optionals config.cudaFlags.data.cudaForwardCompat (
+            config.cudaFlags.utils.gencodeMapper "compute" [
+              (lists.last config.cudaFlags.data.cudaCapabilities)
+            ]
+          );
+      };
+      gencodeString = options.mkOption {
+        description = "A space-separated string of CUDA gencode arguments to pass to NVCC";
+        example = "-gencode=arch=compute_75,code=sm_75 ... -gencode=arch=compute_86,code=compute_86";
+        type = types.str;
+        default = strings.concatStringsSep " " config.cudaFlags.data.gencodeArgs;
+      };
 
-    jetsonComputeCapabilities = options.mkOption {
-      description = "The compute capabilities supported by Jetson devices.";
-      type = types.listOf generic.types.cudaCapability;
-      default = trivial.pipe config.cudaFlags.cudaComputeCapabilityToIsJetson [
-        (attrsets.filterAttrs (_: isJetson: isJetson))
-        builtins.attrNames
-      ];
-    };
+      isJetsonBuild = options.mkOption {
+        description = ''
+          Whether the build is for a Jetson device.
 
-    jetsonTargets = options.mkOption {
-      description = ''
-        The compute capabilities supported by Jetson devices and requested by the user.
-
-        NOTE: Jetson devices are never built by default because they cannot be targeted along with
-        non-Jetson devices and require an aarch64 host platform. As such, if they're present anywhere,
-        they must be in the user-specified cudaCapabilities.
-
-        NOTE: We don't need to worry about mixes of Jetson and non-Jetson devices here -- there's
-        sanity-checking for all that in below.
-      '';
-      type = types.listOf generic.types.cudaCapability;
-      default = lists.intersectLists config.cudaFlags.jetsonComputeCapabilities config.cudaCapabilities;
-    };
-
-    dropDot = options.mkOption {
-      description = "Drops dots from a string.";
-      type = types.functionTo types.str;
-      default = builtins.replaceStrings [ "." ] [ "" ];
-    };
-
-    archMapper = options.mkOption {
-      description = ''
-        Maps a feature across a list of architecture versions to produce a list of architectures.
-
-        For example, "sm" and [ "8.0" "8.6" "8.7" ] produces [ "sm_80" "sm_86" "sm_87" ].
-      '';
-      type = types.functionTo (types.listOf types.str) (types.listOf types.str);
-      default =
-        feat: versions:
-        lists.map (computeCapability: "${feat}_${config.cudaFlags.dropDot computeCapability}");
+          Jetson devices cannot be targeted by the same binaries which target non-Jetson devices. While
+          NVIDIA provides both `linux-aarch64` and `linux-sbsa` packages, which both target `aarch64`,
+          they are built with different settings and cannot be mixed.
+        '';
+        type = types.bool;
+        default =
+          let
+            requestedJetsonDevices = config.cudaFlags.data.cudaJetsonGpus;
+            requestedNonJetsonDevices = config.cudaFlags.data.cudaNonJetsonGpus;
+            jetsonBuildSufficientCondition = requestedJetsonDevices != [ ];
+            jetsonBuildNecessaryCondition = requestedNonJetsonDevices == [ ] && stdenv.hostPlatform.isAarch64;
+          in
+          trivial.throwIf (jetsonBuildSufficientCondition && !jetsonBuildNecessaryCondition)
+            ''
+              Jetson devices cannot be targeted with non-Jetson devices. Additionally, they require hostPlatform to be aarch64.
+              You requested ${builtins.toJSON config.cudaFlags.data.cudaCapabilities} for host platform ${stdenv.hostPlatform.system}.
+              Requested Jetson devices: ${builtins.toJSON requestedJetsonDevices}.
+              Requested non-Jetson devices: ${builtins.toJSON requestedNonJetsonDevices}.
+              Exactly one of the following must be true:
+              - All CUDA capabilities belong to Jetson devices and hostPlatform is aarch64.
+              - No CUDA capabilities belong to Jetson devices.
+              See cudaPackages.cudaModules.config.gpus for a list of architectures supported by this version of Nixpkgs.
+            ''
+            jetsonBuildSufficientCondition
+          && jetsonBuildNecessaryCondition;
+      };
     };
   };
 }
-
-#   # dropDot :: String -> String
-#   dropDot = ver: builtins.replaceStrings [ "." ] [ "" ] ver;
-
-#   # archMapper :: String -> List String -> List String
-#   # Maps a feature across a list of architecture versions to produce a list of architectures.
-#   # For example, "sm" and [ "8.0" "8.6" "8.7" ] produces [ "sm_80" "sm_86" "sm_87" ].
-#   archMapper = feat: lists.map (computeCapability: "${feat}_${dropDot computeCapability}");
-
-#   # gencodeMapper :: String -> List String -> List String
-#   # Maps a feature across a list of architecture versions to produce a list of gencode arguments.
-#   # For example, "sm" and [ "8.0" "8.6" "8.7" ] produces [ "-gencode=arch=compute_80,code=sm_80"
-#   # "-gencode=arch=compute_86,code=sm_86" "-gencode=arch=compute_87,code=sm_87" ].
-#   gencodeMapper =
-#     feat:
-#     lists.map (
-#       computeCapability:
-#       "-gencode=arch=compute_${dropDot computeCapability},code=${feat}_${dropDot computeCapability}"
-#     );
-
-#   # Maps Nix system to NVIDIA redist arch.
-#   # NOTE: We swap out the default `linux-sbsa` redist (for server-grade ARM chips) with the
-#   # `linux-aarch64` redist (which is for Jetson devices) if we're building any Jetson devices.
-#   # Since both are based on aarch64, we can only have one or the other, otherwise there's an
-#   # ambiguity as to which should be used.
-#   # NOTE: This function *will* be called by unsupported systems because `cudaPackages` is part of
-#   # `all-packages.nix`, which is evaluated on all systems. As such, we need to handle unsupported
-#   # systems gracefully.
-#   # getRedistArch :: String -> String
-#   getRedistArch =
-#     nixSystem:
-#     attrsets.attrByPath [ nixSystem ] "unsupported" {
-#       aarch64-linux = if jetsonTargets != [ ] then "linux-aarch64" else "linux-sbsa";
-#       x86_64-linux = "linux-x86_64";
-#       ppc64le-linux = "linux-ppc64le";
-#       x86_64-windows = "windows-x86_64";
-#     };
-
-#   # Maps NVIDIA redist arch to Nix system.
-#   # NOTE: This function *will* be called by unsupported systems because `cudaPackages` is part of
-#   # `all-packages.nix`, which is evaluated on all systems. As such, we need to handle unsupported
-#   # systems gracefully.
-#   # getNixSystem :: String -> String
-#   getNixSystem =
-#     redistArch:
-#     attrsets.attrByPath [ redistArch ] "unsupported-${redistArch}" {
-#       linux-sbsa = "aarch64-linux";
-#       linux-aarch64 = "aarch64-linux";
-#       linux-x86_64 = "x86_64-linux";
-#       linux-ppc64le = "ppc64le-linux";
-#       windows-x86_64 = "x86_64-windows";
-#     };
-
-#   formatCapabilities =
-#     {
-#       cudaCapabilities,
-#       enableForwardCompat ? true,
-#     }:
-#     rec {
-#       inherit cudaCapabilities enableForwardCompat;
-
-#       # archNames :: List String
-#       # E.g. [ "Turing" "Ampere" ]
-#       #
-#       # Unknown architectures are rendered as sm_XX gencode flags.
-#       archNames = lists.unique (
-#         lists.map (cap: cudaComputeCapabilityToName.${cap} or "sm_${dropDot cap}") cudaCapabilities
-#       );
-
-#       # realArches :: List String
-#       # The real architectures are physical architectures supported by the CUDA version.
-#       # E.g. [ "sm_75" "sm_86" ]
-#       realArches = archMapper "sm" cudaCapabilities;
-
-#       # virtualArches :: List String
-#       # The virtual architectures are typically used for forward compatibility, when trying to support
-#       # an architecture newer than the CUDA version allows.
-#       # E.g. [ "compute_75" "compute_86" ]
-#       virtualArches = archMapper "compute" cudaCapabilities;
-
-#       # arches :: List String
-#       # By default, build for all supported architectures and forward compatibility via a virtual
-#       # architecture for the newest supported architecture.
-#       # E.g. [ "sm_75" "sm_86" "compute_86" ]
-#       arches = realArches ++ lists.optional enableForwardCompat (lists.last virtualArches);
-
-#       # gencode :: List String
-#       # A list of CUDA gencode arguments to pass to NVCC.
-#       # E.g. [ "-gencode=arch=compute_75,code=sm_75" ... "-gencode=arch=compute_86,code=compute_86" ]
-#       gencode =
-#         let
-#           base = gencodeMapper "sm" cudaCapabilities;
-#           forward = gencodeMapper "compute" [ (lists.last cudaCapabilities) ];
-#         in
-#         base ++ lib.optionals enableForwardCompat forward;
-
-#       # gencodeString :: String
-#       # A space-separated string of CUDA gencode arguments to pass to NVCC.
-#       # E.g. "-gencode=arch=compute_75,code=sm_75 ... -gencode=arch=compute_86,code=compute_86"
-#       gencodeString = strings.concatStringsSep " " gencode;
-
-#       # Jetson devices cannot be targeted by the same binaries which target non-Jetson devices. While
-#       # NVIDIA provides both `linux-aarch64` and `linux-sbsa` packages, which both target `aarch64`,
-#       # they are built with different settings and cannot be mixed.
-#       # isJetsonBuild :: Boolean
-#       isJetsonBuild =
-#         let
-#           requestedJetsonDevices =
-#             lists.filter (cap: cudaComputeCapabilityToIsJetson.${cap} or false)
-#               cudaCapabilities;
-#           requestedNonJetsonDevices =
-#             lists.filter (cap: !(builtins.elem cap requestedJetsonDevices))
-#               cudaCapabilities;
-#           jetsonBuildSufficientCondition = requestedJetsonDevices != [ ];
-#           jetsonBuildNecessaryCondition = requestedNonJetsonDevices == [ ] && stdenv.hostPlatform.isAarch64;
-#         in
-#         trivial.throwIf (jetsonBuildSufficientCondition && !jetsonBuildNecessaryCondition)
-#           ''
-#             Jetson devices cannot be targeted with non-Jetson devices. Additionally, they require hostPlatform to be aarch64.
-#             You requested ${builtins.toJSON cudaCapabilities} for host platform ${stdenv.hostPlatform.system}.
-#             Requested Jetson devices: ${builtins.toJSON requestedJetsonDevices}.
-#             Requested non-Jetson devices: ${builtins.toJSON requestedNonJetsonDevices}.
-#             Exactly one of the following must be true:
-#             - All CUDA capabilities belong to Jetson devices and hostPlatform is aarch64.
-#             - No CUDA capabilities belong to Jetson devices.
-#             See cudaPackages.cudaModules.config.gpus for a list of architectures supported by this version of Nixpkgs.
-#           ''
-#           jetsonBuildSufficientCondition
-#         && jetsonBuildNecessaryCondition;
-#     };
-# in
-# # When changing names or formats: pause, validate, and update the assert
-# assert let
-#   expected = {
-#     cudaCapabilities = [
-#       "7.5"
-#       "8.6"
-#     ];
-#     enableForwardCompat = true;
-
-#     archNames = [
-#       "Turing"
-#       "Ampere"
-#     ];
-#     realArches = [
-#       "sm_75"
-#       "sm_86"
-#     ];
-#     virtualArches = [
-#       "compute_75"
-#       "compute_86"
-#     ];
-#     arches = [
-#       "sm_75"
-#       "sm_86"
-#       "compute_86"
-#     ];
-
-#     gencode = [
-#       "-gencode=arch=compute_75,code=sm_75"
-#       "-gencode=arch=compute_86,code=sm_86"
-#       "-gencode=arch=compute_86,code=compute_86"
-#     ];
-#     gencodeString = "-gencode=arch=compute_75,code=sm_75 -gencode=arch=compute_86,code=sm_86 -gencode=arch=compute_86,code=compute_86";
-
-#     isJetsonBuild = false;
-#   };
-#   actual = formatCapabilities {
-#     cudaCapabilities = [
-#       "7.5"
-#       "8.6"
-#     ];
-#   };
-#   actualWrapped = (builtins.tryEval (builtins.deepSeq actual actual)).value;
-# in
-# asserts.assertMsg ((strings.versionAtLeast cudaVersion "11.2") -> (expected == actualWrapped)) ''
-#   This test should only fail when using a version of CUDA older than 11.2, the first to support
-#   8.6.
-#   Expected: ${builtins.toJSON expected}
-#   Actual: ${builtins.toJSON actualWrapped}
-# '';
-# # Check mixed Jetson and non-Jetson devices
-# assert let
-#   expected = false;
-#   actual = formatCapabilities {
-#     cudaCapabilities = [
-#       "7.2"
-#       "7.5"
-#     ];
-#   };
-#   actualWrapped = (builtins.tryEval (builtins.deepSeq actual actual)).value;
-# in
-# asserts.assertMsg (expected == actualWrapped) ''
-#   Jetson devices capabilities cannot be mixed with non-jetson devices.
-#   Capability 7.5 is non-Jetson and should not be allowed with Jetson 7.2.
-#   Expected: ${builtins.toJSON expected}
-#   Actual: ${builtins.toJSON actualWrapped}
-# '';
-# # Check Jetson-only
-# assert let
-#   expected = {
-#     cudaCapabilities = [
-#       "6.2"
-#       "7.2"
-#     ];
-#     enableForwardCompat = true;
-
-#     archNames = [
-#       "Pascal"
-#       "Volta"
-#     ];
-#     realArches = [
-#       "sm_62"
-#       "sm_72"
-#     ];
-#     virtualArches = [
-#       "compute_62"
-#       "compute_72"
-#     ];
-#     arches = [
-#       "sm_62"
-#       "sm_72"
-#       "compute_72"
-#     ];
-
-#     gencode = [
-#       "-gencode=arch=compute_62,code=sm_62"
-#       "-gencode=arch=compute_72,code=sm_72"
-#       "-gencode=arch=compute_72,code=compute_72"
-#     ];
-#     gencodeString = "-gencode=arch=compute_62,code=sm_62 -gencode=arch=compute_72,code=sm_72 -gencode=arch=compute_72,code=compute_72";
-
-#     isJetsonBuild = true;
-#   };
-#   actual = formatCapabilities {
-#     cudaCapabilities = [
-#       "6.2"
-#       "7.2"
-#     ];
-#   };
-#   actualWrapped = (builtins.tryEval (builtins.deepSeq actual actual)).value;
-# in
-# asserts.assertMsg
-#   # We can't do this test unless we're targeting aarch64
-#   (stdenv.hostPlatform.isAarch64 -> (expected == actualWrapped))
-#   ''
-#     Jetson devices can only be built with other Jetson devices.
-#     Both 6.2 and 7.2 are Jetson devices.
-#     Expected: ${builtins.toJSON expected}
-#     Actual: ${builtins.toJSON actualWrapped}
-#   '';
-# {
-#   # formatCapabilities :: { cudaCapabilities: List Capability, enableForwardCompat: Boolean } ->  { ... }
-#   inherit formatCapabilities;
-
-#   # cudaArchNameToVersions :: String => String
-#   inherit cudaArchNameToVersions;
-
-#   # cudaComputeCapabilityToName :: String => String
-#   inherit cudaComputeCapabilityToName;
-
-#   # dropDot :: String -> String
-#   inherit dropDot;
-
-#   inherit
-#     defaultCapabilities
-#     supportedCapabilities
-#     jetsonComputeCapabilities
-#     jetsonTargets
-#     getNixSystem
-#     getRedistArch
-#     ;
-# }
-# // formatCapabilities {
-#   cudaCapabilities =
-#     if config.cudaCapabilities == [ ] then
-#       defaultCapabilities
-#     else
-#       config.cudaCapabilities;
-#   enableForwardCompat = config.cudaForwardCompat;
-# }

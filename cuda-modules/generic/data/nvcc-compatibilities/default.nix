@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  inherit (lib) attrsets options types;
+  inherit (lib) options types;
 
   nvccCompatibilityOptions.options = {
     clangMinMajorVersion = options.mkOption {
@@ -20,14 +20,6 @@ let
       type = config.generic.types.majorVersion;
     };
   };
-
-  nvccCompatibilitiesOptions.options = attrsets.genAttrs config.cudaVersions (
-    cudaVersion:
-    options.mkOption {
-      description = "Compatibility of NVCC with GCC and Clang for CUDA ${cudaVersion}";
-      type = config.generic.types.nvccCompatibility;
-    }
-  );
 in
 {
   options.generic = {
@@ -54,8 +46,17 @@ in
           NOTE: Because all platforms NVIDIA supports use GCC and Clang, we omit the architectures here.
         '';
         type = types.optionType;
-        # Each version of CUDA we support must have a corresponding entry here.
-        default = types.submoduleWith { modules = [ nvccCompatibilitiesOptions ]; };
+        # NOTE: While it may be tempting to do something like:
+        # nvccCompatibilitiesOptions.options = attrsets.genAttrs config.cudaVersions (
+        #   cudaVersion:
+        #   options.mkOption {
+        #     description = "Compatibility of NVCC with GCC and Clang for CUDA ${cudaVersion}";
+        #     type = config.generic.types.nvccCompatibility;
+        #   }
+        # );
+        # And create a submodule, note that in the generate documentation *every* CUDA version would be
+        # listed as a separate option, which is not what we want.
+        default = types.attrsOf config.generic.types.nvccCompatibility;
       };
     };
     data.nvccCompatibilities = options.mkOption {

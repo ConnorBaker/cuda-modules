@@ -22,7 +22,10 @@ let
       inherit description;
       baseType = types.strMatching pattern;
     };
+
+  numOptionalTrailingAlpha = "[[:digit:]]+[a-z]?";
 in
+# "-gencode=arch=compute_75,code=sm_75"
 {
   # As this module is meant to be consumed as a submodule, allow the user to add additional options to the module (so
   # long as they are also option types -- otherwise they would not belong in this module.
@@ -30,9 +33,26 @@ in
   options =
     # Types which are based on the `strMatching` type.
     attrsets.mapAttrs mkOptionForStrMatching {
+      archName = {
+        description = "A CUDA architecture name, like Ampere or Ada.";
+        pattern = "^[[:alpha:]]+$";
+      };
+
       cudaArch = {
-        description = "A CUDA architecture name.";
-        pattern = "^sm_[[:digit:]]+[a-z]?$";
+        description = "A real/physical CUDA architecture name.";
+        pattern = "^sm_${numOptionalTrailingAlpha}$";
+      };
+
+      virtualCudaArch = {
+        description = "A virtual CUDA architecture name.";
+        pattern = "^compute_${numOptionalTrailingAlpha}$";
+      };
+
+      gencodeArg = {
+        description = "A `gencode` argument for the `nvcc` compiler.";
+        # The `arch` component is always a virtual architecture, and the `code` component is either a virtual
+        # architecture or a real architecture.
+        pattern = "^-gencode=arch=compute_${numOptionalTrailingAlpha},code=(sm|compute)_${numOptionalTrailingAlpha}$";
       };
 
       cudaCapability = {

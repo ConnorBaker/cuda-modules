@@ -10,7 +10,7 @@ let
     archName = options.mkOption {
       description = "Name of the microarchitecture";
       example = "Kepler";
-      type = types.nonEmptyStr;
+      type = config.generic.types.archName;
     };
     computeCapability = options.mkOption {
       description = "Compute capability of the GPU";
@@ -27,12 +27,7 @@ let
 
         NOTE: These architectures are only built upon request.
       '';
-      # Extensible options: https://nixos.org/manual/nixos/unstable/#sec-option-declarations-eot
-      # Unfortunately we can't use types.bool and must use types.enum.
-      type = types.enum [
-        true
-        false
-      ];
+      type = types.bool;
     };
     minCudaVersion = options.mkOption {
       description = "The minimum (inclusive) CUDA version that supports this GPU.";
@@ -63,24 +58,6 @@ in
         type = types.optionType;
         default = types.submoduleWith { modules = [ gpuOptions ]; };
       };
-      jetsonGpu = options.mkOption {
-        description = "A GPU that is part of NVIDIA's Jetson line of embedded computers";
-        type = types.optionType;
-        default = types.submoduleWith {
-          modules = config.generic.types.gpu.getSubModules ++ [
-            { options.isJetson = options.mkOption { type = types.enum [ true ]; }; }
-          ];
-        };
-      };
-      nonJetsonGpu = options.mkOption {
-        description = "A GPU that is not part of NVIDIA's Jetson line of embedded computers";
-        type = types.optionType;
-        default = types.submoduleWith {
-          modules = config.generic.types.gpu.getSubModules ++ [
-            { options.isJetson = options.mkOption { type = types.enum [ false ]; }; }
-          ];
-        };
-      };
     };
     data.gpus = {
       all = options.mkOption {
@@ -90,12 +67,12 @@ in
       };
       nonJetsons = options.mkOption {
         description = "Known GPUs that are not part of NVIDIA's Jetson line of embedded computers";
-        type = types.listOf config.generic.types.nonJetsonGpu;
+        type = types.listOf config.generic.types.gpu;
         default = lib.filter (gpu: !gpu.isJetson) config.generic.data.gpus.all;
       };
       jetsons = options.mkOption {
         description = "Known GPUs that are part of NVIDIA's Jetson line of embedded computers";
-        type = types.listOf config.generic.types.jetsonGpu;
+        type = types.listOf config.generic.types.gpu;
         default = lib.filter (gpu: gpu.isJetson) config.generic.data.gpus.all;
       };
     };
